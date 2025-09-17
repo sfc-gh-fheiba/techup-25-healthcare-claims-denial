@@ -31,7 +31,8 @@ Section 6.1 - Laboratory Services
 - `homeowners_policy.pdf` - Property insurance policy sample
 - `policy_excerpts.json` - Structured policy rule extracts
 
-## Document AI Integration
-- PDF documents processed through Document AI
-- Extracted text stored as structured JSON
-- Policy rules parsed and indexed for search
+## Snowflake AI Extract Integration
+- PDF documents processed through Snowflake AI Extract
+- Extracted text stored as structured data in Snowflake tables
+- Policy rules parsed using Cortex Complete and indexed with Cortex Search
+- Vector embeddings generated for semantic policy matching

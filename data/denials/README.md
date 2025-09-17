@@ -44,11 +44,11 @@ This folder contains insurance claim denial notices and historical appeal data.
 - `denial_patterns.json` - Analysis of common denial patterns
 - `successful_appeals.json` - Examples of successful appeal arguments
 
-## Document AI Processing
-- PDF denial notices processed automatically
-- Text extraction and structure parsing
-- Denial reason classification and categorization
-- Policy reference extraction and linking
+## Snowflake AI Extract Processing
+- PDF denial notices processed automatically using Snowflake AI Extract
+- Text extraction and structure parsing with native Snowflake capabilities
+- Denial reason classification using Snowflake Cortex Complete
+- Policy reference extraction and linking through Cortex Search
 
 ## Analytics Support
 - Denial rate tracking by procedure code

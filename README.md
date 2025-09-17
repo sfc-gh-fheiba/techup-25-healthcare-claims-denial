@@ -1,11 +1,11 @@
-# TechUp 2025 - The BattleBots - Intelligent Claims Optimization System
+# TechUp 2025 - The BattleBots - Snowflake Cortex Claims Optimization System
 
 **Team Lead:** Nick Akincilar  
 **Team Members:** Brendan Schultz, Fady Heiba, Jack Roche, Michael Costner, Nick Akincilar
 
 ## Project Overview
 
-An intelligent orchestration system that helps healthcare finance teams and insurance providers optimize claims processing to reduce claims denials. Our solution uses AI-powered analysis to validate claims against insurance policy documents, identify potential issues before submission, and generate automated appeals with supporting documentation.
+A **Snowflake Cortex-powered** intelligent orchestration system built for healthcare finance teams and insurance providers to optimize claims processing and reduce claim denials. This demo showcases the full power of Snowflake's AI capabilities including Cortex Complete, Cortex Search, Cortex Analyst, and AI Extract in a real-world healthcare use case - perfect for sales engineers demonstrating Snowflake's AI platform.
 
 **Vision:** Create a one-stop shop for any sort of insurance claim optimization - applicable to healthcare, auto, homeowners, and other insurance types.
 
@@ -67,6 +67,10 @@ graph TD
 
 ## Technical Architecture
 
+### Snowflake-Native Architecture
+
+This solution is built entirely within the Snowflake ecosystem, leveraging the full power of Snowflake Cortex AI capabilities. All data processing, AI inference, and business logic runs natively in Snowflake, providing enterprise-scale performance and security.
+
 ### Core Components
 
 #### 1. **Claims Data Processing**
@@ -75,9 +79,10 @@ graph TD
 - **Processing**: Validation, normalization, code verification
 
 #### 2. **Policy Document Analysis**
-- **Document AI Integration**: Process unstructured insurance policy documents
-- **Cortex Search**: Fuzzy matching of procedures against policy rules
-- **Rule Database**: Structured lookup table for procedure codes and approval criteria
+- **Snowflake AI Extract**: Process unstructured insurance policy documents using Snowflake's native AI capabilities
+- **Cortex Search**: Fuzzy matching of procedures against policy rules with vector-based semantic search
+- **Cortex Complete**: LLM-powered analysis and rule extraction from policy documents
+- **Rule Database**: Structured lookup table for procedure codes and approval criteria stored in Snowflake
 
 #### 3. **AI-Powered Matching Engine**
 - **Code Validation**: Verify correct procedure codes against insurance databases
@@ -94,11 +99,49 @@ graph TD
 - **Frontend**: Streamlit web application with potential for full React frontend
 - **Backend**: Python-based processing engine
 - **AI/ML**: 
-  - Snowflake Cortex for search and LLM capabilities
-  - Document AI for unstructured document processing
-  - LLMs for natural language processing and response generation
-- **Data Storage**: Snowflake for structured data and document storage
-- **Document Processing**: PDF/Word document generation and parsing
+  - **Snowflake Cortex Complete**: LLM capabilities for natural language processing and response generation
+  - **Snowflake Cortex Search**: Vector-based semantic search for policy matching
+  - **Snowflake AI Extract**: Native unstructured document processing and data extraction
+  - **Snowflake Cortex Analyst**: Advanced analytics and pattern recognition
+- **Data Platform**: Snowflake as the single source of truth for all data and processing
+- **Document Storage**: Snowflake stages for secure PDF/document storage and processing
+- **Compute**: Snowflake warehouses for scalable processing power
+- **Security**: Snowflake's enterprise-grade security and governance
+
+### Snowflake Cortex Showcase Features
+
+This demo highlights key Snowflake Cortex capabilities that sales engineers can showcase:
+
+#### **Cortex Complete (LLM)**
+- **Intelligent Appeal Generation**: Generate personalized appeal letters using context from policy documents
+- **Claims Analysis**: Natural language analysis of claim details and denial reasons
+- **Policy Interpretation**: Convert complex insurance language into actionable insights
+- **Multi-model Support**: Leverage different LLM models optimized for specific tasks
+
+#### **Cortex Search (Vector Search)**
+- **Semantic Policy Matching**: Find relevant policy sections using natural language queries
+- **Procedure Code Similarity**: Match procedures to similar covered services
+- **Historical Pattern Recognition**: Identify successful appeal strategies from past cases
+- **Real-time Recommendations**: Instant suggestions based on vector similarity
+
+#### **Cortex Analyst (Advanced Analytics)**
+- **Denial Pattern Analysis**: Identify trends and patterns in claim denials
+- **Success Rate Optimization**: Analyze which strategies lead to successful appeals
+- **Cost-Benefit Modeling**: Predict ROI of different appeal approaches
+- **Provider Performance Insights**: Analytics on provider-specific denial rates
+
+#### **AI Extract (Document Processing)**
+- **Unstructured Data Processing**: Extract structured data from PDF denial notices and policy documents
+- **Multi-format Support**: Process various document types within Snowflake
+- **Automated Classification**: Categorize documents and extract key entities
+- **Native Integration**: No external APIs required - everything runs in Snowflake
+
+### Enterprise Benefits for Sales Demo
+- **Single Platform**: All AI capabilities within Snowflake ecosystem - no external dependencies
+- **Governance & Security**: Enterprise-grade data protection and compliance built-in
+- **Scalability**: Auto-scaling compute resources based on demand
+- **Cost Optimization**: Pay-per-use model for AI services with transparent pricing
+- **Integration**: Seamless connection with existing Snowflake data and workflows
 
 ## Data Requirements
 
@@ -127,10 +170,10 @@ graph TD
    - Pattern analysis data
 
 ### Sample Data Generation Strategy
-- Use Cursor AI to generate realistic claim scenarios
-- Create mock insurance policy documents
-- Generate PDF denial notices for Document AI processing
-- Build synthetic procedure code databases
+- Use Snowflake Cortex Complete to generate realistic claim scenarios
+- Create mock insurance policy documents stored in Snowflake stages
+- Generate PDF denial notices for Snowflake AI Extract processing
+- Build synthetic procedure code databases using Snowflake's data generation capabilities
 
 ## Development Roadmap
 
@@ -141,16 +184,16 @@ graph TD
 - [ ] Core data generation scripts
 
 ### Phase 2: Core Engine
-- [ ] Claims validation engine
-- [ ] Policy document processing with Document AI
-- [ ] Basic matching algorithms
-- [ ] Cortex Search integration
+- [ ] Claims validation engine using Snowflake stored procedures
+- [ ] Policy document processing with Snowflake AI Extract
+- [ ] Vector-based matching algorithms with Cortex Search
+- [ ] Cortex Search integration with semantic similarity
 
 ### Phase 3: AI Integration
-- [ ] LLM-powered policy analysis
-- [ ] Automated appeal generation
-- [ ] Fuzzy matching improvements
-- [ ] Response optimization
+- [ ] Cortex Complete-powered policy analysis and interpretation
+- [ ] Automated appeal generation using Cortex Complete
+- [ ] Semantic similarity matching with Cortex Search vectors
+- [ ] Response optimization using Snowflake ML functions
 
 ### Phase 4: User Interface
 - [ ] Streamlit application development
@@ -163,6 +206,35 @@ graph TD
 - [ ] Batch processing capabilities
 - [ ] Analytics and reporting
 - [ ] Integration APIs
+
+## Hackathon Demo Features
+
+This project is specifically designed for **Snowflake sales engineers** to showcase Snowflake Cortex capabilities in a real-world healthcare scenario.
+
+### Key Demo Talking Points
+
+#### **Snowflake as a Complete AI Platform**
+- **All-in-One Solution**: No external AI services needed - everything runs natively in Snowflake
+- **Enterprise Ready**: Built-in security, governance, and compliance for healthcare data
+- **Cost Effective**: No data movement costs, transparent AI service pricing
+
+#### **Technical Differentiators**
+- **Vector Search**: Demonstrate semantic similarity for policy matching
+- **LLM Integration**: Show how Cortex Complete generates human-like responses
+- **Document Processing**: Live demo of AI Extract processing PDF documents
+- **Scalable Compute**: Highlight auto-scaling warehouse capabilities
+
+#### **Business Value Propositions**
+- **Faster Time to Value**: Pre-built solution reduces development time
+- **Reduced IT Complexity**: Single platform eliminates integration challenges
+- **Improved ROI**: Automated appeals increase revenue recovery rates
+- **Compliance Ready**: Healthcare data remains secure within Snowflake
+
+### Live Demo Capabilities
+1. **Upload Claim Document**: Real-time AI Extract processing
+2. **Policy Matching**: Vector search finds relevant policy sections instantly  
+3. **Appeal Generation**: Watch Cortex Complete create personalized appeals
+4. **Success Analytics**: Show Cortex Analyst insights on denial patterns
 
 ## Demo Scenario
 
@@ -199,9 +271,10 @@ graph TD
 
 ### Prerequisites
 - Python 3.8+
-- Snowflake account with Cortex enabled
-- Document AI API access
+- **Snowflake account with Cortex enabled** (Complete, Search, and Analyst)
+- **Snowflake AI Extract** functionality enabled
 - Streamlit for web interface
+- Snowflake Connector for Python
 
 ### Installation
 ```bash
@@ -212,19 +285,22 @@ cd techup-25-healthcare-claims-denial
 # Install dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
+# Set up environment variables for Snowflake
 cp .env.example .env
-# Edit .env with your API keys and configuration
+# Edit .env with your Snowflake connection details:
+# SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD
+# SNOWFLAKE_DATABASE, SNOWFLAKE_SCHEMA, SNOWFLAKE_WAREHOUSE
 
 # Run the application
 streamlit run app.py
 ```
 
 ### Configuration
-- Snowflake connection parameters
-- Document AI API credentials
-- Cortex Search configuration
-- Insurance provider data sources
+- **Snowflake connection parameters** (account, user, password, database, schema)
+- **Cortex services configuration** (Complete, Search, Analyst models)
+- **AI Extract settings** for document processing
+- **Snowflake stages** for document and data storage
+- Insurance provider data sources integrated through Snowflake connectors
 
 ---
 
