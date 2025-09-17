@@ -336,11 +336,11 @@ This demo highlights key Snowflake Cortex capabilities that sales engineers can 
 
 ### Phase 2: Data Views for Agent Workflows 📊
 **Goal**: Structure data for the claim generation → rebuttal → optimization loop
-- [ ] **Patient Data Views**: Create tables/views for patient information lookup by Builder Agent
-- [ ] **Procedure Code Reference**: Setup `CPTDETAIL`/`DIAGNOSISDETAIL` for Builder Agent claim generation
-- [ ] **Claims History Views**: Structure `EOBDETAIL` for Insurance Agent rebuttal analysis
-- [ ] **Successful Claims Patterns**: Views on `CLAIMCHARGEDETAIL` for Builder Agent optimization
-- [ ] **Insurance Policy Tables**: Prepare policy data structure for both agents
+- [x] **Patient Data Views**: Create tables/views for patient information lookup by Builder Agent
+- [x] **Procedure Code Reference**: Setup `CPTDETAIL`/`DIAGNOSISDETAIL` for Builder Agent claim generation
+- [x] **Claims History Views**: Structure `EOBDETAIL` for Insurance Agent rebuttal analysis
+- [x] **Successful Claims Patterns**: Views on `CLAIMCHARGEDETAIL` for Builder Agent optimization
+- [x] **Insurance Policy Tables**: Prepare policy data structure for both agents
 
 ### Phase 3: Builder Agent Development 🛠️
 **Goal**: Create claim generator that gathers inputs and outputs insurance claims
@@ -468,25 +468,28 @@ This project is specifically designed for **Snowflake sales engineers** to showc
 
 ### Installation
 
-**📋 Quick Setup (5 minutes):**
+**📋 Quick Setup (10 minutes):**
 
 ```bash
 # Clone the repository
 git clone [repository-url]
 cd techup-25-healthcare-claims-denial
 
-# Follow the detailed setup guide
-open SETUP.md
-# or view online: [SETUP.md](./SETUP.md)
+# 1. Setup Snowflake connection
+open SETUP.md  # Follow RSA key setup guide
+
+# 2. Run setup notebooks in Snowflake (in order):
+# - 01_Data_Views_for_Agent_Workflows.ipynb
+# - 02_Builder_Agent_Development.ipynb
 ```
 
 **⚡ Key Setup Steps:**
-1. Generate RSA key pair for secure authentication
-2. Add public key to your Snowflake user account
+1. Generate RSA key pair for secure authentication ([SETUP.md](./SETUP.md))
+2. Add public key to your Snowflake user account  
 3. Copy `config.toml.template` to `config.toml` and customize
-4. Test connection to both marketplace and project databases
+4. **Run setup notebooks in Snowflake** to build data foundation and agents
 
-**📖 Complete instructions with troubleshooting in [SETUP.md](./SETUP.md)**
+**📖 Complete instructions: [SETUP.md](./SETUP.md) + Setup Notebooks**
 
 ### Configuration
 - **Snowflake connection parameters** (account, user, password, warehouse)
