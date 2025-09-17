@@ -208,85 +208,184 @@ This demo highlights key Snowflake Cortex capabilities that sales engineers can 
 
 #### **Production Marketplace Data**
 - **Database**: `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA` (Snowflake Marketplace)
+- **Schema**: `ISTG` (Main data schema)
 - **Purpose**: Real healthcare claims and remittance data for authentic analysis
 - **Benefits**: Live, updated healthcare data without ETL complexity
+- **Key Tables**: 8 tables with 13+ million rows of healthcare transaction data
 
-#### **Demo Project Database**
+#### **Demo Project Database** 
 - **Database**: `CLAIMS_DEMO` (Main project workspace)
+- **Schema**: `PUBLIC` (Standard schema)
 - **Purpose**: Custom tables, processed results, demo-specific data
 - **Integration**: Combines marketplace data with custom processing logic
 
 ### Primary Data Sources
 
 1. **Marketplace Claims Data** 🏪
-   - **Source**: Snowflake Marketplace (`CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA`)
-   - Real hospital claims and remittance information
-   - Patient/provider anonymized data
-   - Procedure codes and descriptions
-   - Cost and payment information
-   - Historical claims patterns
+   - **Source**: Snowflake Marketplace (`CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA.ISTG`)
+   - **Key Tables for Dual-Agent System**:
+   
+   #### **CLAIMCHARGEDETAIL** (25,350 rows) - Claims Submissions 
+   - **Role in Workflow**: Input for Builder Agent
+   - **Key Columns**: `CLAIMID`, `CHARGEPROCEDURECODE`, `CHARGES`, `PLACEOFSERVICECODE`, `MODIFIER1-4`
+   - **Usage**: Real claim structure patterns for Builder Agent to emulate
+   
+   #### **EOBDETAIL** (3.6M rows) - Insurance Responses & Denials ⚠️ 
+   - **Role in Workflow**: Training data for Insurance Agent
+   - **Key Columns**: `CLAIMID`, `EOBPAYERNAME`, `BILLEDAMOUNT`, `PAIDAMOUNT`, `DENIEDADJUSTMENT`, `DENIALCATEGORYID`
+   - **Usage**: Realistic denial patterns, adjustment logic, and payer behavior for adversarial validation
+   - **Denial Examples**: Various payers with denial amounts up to $2.2M, focused on Cigna policy scenarios
+   
+   #### **CPTDETAIL** (5.4M rows) - Procedure Codes
+   - **Role in Workflow**: Validation for both agents  
+   - **Key Columns**: `CLAIMID`, `CPTCODE`, `SEQUENCE`
+   - **Usage**: Real procedure code combinations and sequencing patterns
+   
+   #### **DIAGNOSISDETAIL** (2M rows) - Diagnosis Codes
+   - **Role in Workflow**: Supporting evidence for both agents
+   - **Key Columns**: `CLAIMID`, `DIAGCODE`, `SEQUENCE` 
+   - **Usage**: ICD-10 diagnosis patterns for procedure justification
+   
+   #### **FACILITYDETAIL** (950k rows) - Provider Information
+   - **Role in Workflow**: Context for claim evaluation
+   - **Usage**: Provider-specific denial patterns and credentialing context
 
-2. **Custom Insurance Policy Documents** (Stored in `CLAIMS_DEMO`)
-   - Coverage rules and limitations processed via AI Extract
-   - Procedure approval criteria
-   - Code-specific requirements
-   - Exclusions and exceptions
+2. **Project Database Tables & Views** (Built in `CLAIMS_DEMO.PUBLIC`)
 
-3. **Standard Code Databases** (Enhanced with marketplace data)
-   - CPT/ICD-10 codes from marketplace datasets
-   - Code descriptions and categories
-   - Insurance-specific code mappings
+   #### **Patient & Provider Data**
+   - **PATIENTS** (Table): Patient demographics, Cigna insurance details, medical history
+     - **Role**: Builder Agent gathers patient context for claim generation
+     - **Usage**: Medical history, allergies, current medications inform claim details
+   
+   - **COMMON_PROCEDURES** (Table): Frequent procedures with Cigna coverage details
+     - **Role**: Builder Agent reference for appropriate procedure selection
+     - **Usage**: Coverage notes, cost ranges, common diagnoses for context
 
-4. **Processed Denial History** (Generated in `CLAIMS_DEMO`)
-   - AI-generated denial scenarios based on real patterns
-   - Appeal outcomes and success rates
-   - Pattern analysis and ML training data
+   #### **Procedure Code Intelligence**  
+   - **PROCEDURE_CODES_REFERENCE** (View): CPT codes with marketplace usage frequency
+     - **Role**: Both agents validate procedure codes against real-world usage
+     - **Usage**: High-usage codes (85025, 80053, 36415) indicate safer claim choices
+   
+   - **PROCEDURE_CODES_WITH_DESCRIPTIONS** (View): Enhanced codes with marketplace data
+     - **Role**: Builder Agent optimizes procedure selection using usage patterns
+     - **Usage**: Combines detailed descriptions with real-world success data
 
-### Data Strategy: Marketplace + Generated Content
+   #### **Insurance Agent Toolkit**
+   - **DENIAL_PATTERNS** (View): Real marketplace denial analysis by payer type  
+     - **Role**: Insurance Agent references actual denial behavior patterns
+     - **Usage**: Authentic denial logic based on Medicare, Blue Cross, Optum precedents
+   
+   - **DENIAL_REASONS** (Table): Cigna-specific denial categories with rebuttal templates
+     - **Role**: Insurance Agent generates realistic rebuttals using actual policy language
+     - **Usage**: Prior auth, medical necessity, coding issues, frequency limits
+   
+   - **INSURANCE_AGENT_TOOLKIT** (View): Complete rebuttal resource with precedent data
+     - **Role**: Insurance Agent delivers consistent, policy-backed rebuttals
+     - **Usage**: Templates + marketplace precedent strength for authentic responses
 
-**Marketplace Data Advantages:**
-- ✅ **Real Healthcare Data**: Authentic claims patterns and procedures
-- ✅ **Instant Access**: No data onboarding or pipeline development
-- ✅ **Compliance Ready**: Pre-anonymized and healthcare-compliant datasets
-- ✅ **Always Fresh**: Marketplace providers maintain and update data
+   #### **Builder Agent Optimization**
+   - **SUCCESSFUL_CLAIMS_PATTERNS** (View): Approved claims with full payment details
+     - **Role**: Builder Agent learns from actually successful claim structures  
+     - **Usage**: Payment rates, payer preferences, successful claim formatting
+   
+   - **BUILDER_AGENT_SUCCESS_GUIDE** (View): Success metrics by procedure code
+     - **Role**: Builder Agent optimizes procedure selection for higher approval probability
+     - **Usage**: Success confidence scoring and payer-specific success patterns
 
-**Custom Generated Content:**
-- Use Snowflake Cortex Complete to generate realistic denial scenarios
-- Create mock insurance policy documents stored in Snowflake stages
-- Generate PDF denial notices for Snowflake AI Extract processing
-- Build synthetic appeal letters and success case studies
+   #### **Policy Knowledge Base**
+   - **CIGNA_POLICY_RULES** (Table): Comprehensive Cigna coverage policies
+     - **Role**: Both agents reference official policy for claims generation and validation
+     - **Usage**: Prior auth requirements, frequency limits, coverage criteria
+   
+   - **AGENT_POLICY_LOOKUP** (View): Unified policy reference combining rules and coverage notes
+     - **Role**: Single source of truth for both agents on Cigna policy compliance
+     - **Usage**: Real-time policy validation during claim generation and rebuttal processes
 
-## Development Roadmap
+   #### **Strength Assessment**
+   - **CLAIM_STRENGTH_CALCULATOR** (View): Overall marketplace approval/denial statistics
+     - **Role**: Insurance Agent calculates realistic claim strength scores
+     - **Usage**: 8.6% baseline approval rate, 79.7% average denial percentage for scoring
 
-### Phase 1: Foundation (Current)
-- [x] Project setup and team formation
-- [x] Requirements analysis and flow mapping
-- [ ] Data schema design
-- [ ] Core data generation scripts
+### Data Strategy: Real Marketplace + AI-Generated Scenarios
 
-### Phase 2: Core Engine
-- [ ] Claims validation engine using Snowflake stored procedures
-- [ ] Policy document processing with Snowflake AI Extract
-- [ ] Vector-based matching algorithms with Cortex Search
-- [ ] Cortex Search integration with semantic similarity
+#### **Marketplace Data Powers Cortex Agent Queries** 🤖
+- **Builder Agent Data**: Query successful claim patterns from `CLAIMCHARGEDETAIL` via Cortex Analyst
+- **Insurance Agent Data**: Access real payer denial logic from `EOBDETAIL` via Cortex Analyst
+- **Procedure Validation**: Cross-reference codes using `CPTDETAIL` and `DIAGNOSISDETAIL` queries
+- **Denial Categories**: 6 distinct denial categories with 47 total denial cases for agent context
 
-### Phase 3: AI Integration
-- [ ] Cortex Complete-powered policy analysis and interpretation
-- [ ] Automated appeal generation using Cortex Complete
-- [ ] Semantic similarity matching with Cortex Search vectors
-- [ ] Response optimization using Snowflake ML functions
+#### **AI-Generated Content for Scenarios**
+- **Policy Documents**: Use Cortex Complete to generate realistic insurance policies
+- **Denial Scenarios**: Create variations based on marketplace denial patterns
+- **Appeal Strategies**: Build success case libraries using historical EOB data
+- **Optimization Rules**: Extract patterns from $184K-$2.2M denial cases
 
-### Phase 4: User Interface
-- [ ] Streamlit application development
-- [ ] Dashboard for claim analysis
-- [ ] Appeal generation interface
-- [ ] Results visualization
+#### **Cortex Agent API Flow**
+1. **Builder Agent** queries marketplace data via Cortex Analyst for successful claim patterns
+2. **Insurance Agent** queries denial data via Cortex Analyst to simulate payer behavior
+3. **Optimization Loop** orchestrated by frontend making sequential API calls to both agents
+4. **Success Scoring** calculated by agents using real payer approval/denial ratios from marketplace data
 
-### Phase 5: Advanced Features
-- [ ] Multi-insurance provider support
-- [ ] Batch processing capabilities
-- [ ] Analytics and reporting
-- [ ] Integration APIs
+## Development Roadmap - Dual-Agent Architecture
+
+### Phase 1: Data Foundation & Setup ✅
+- [x] Project setup and dual-agent architecture design
+- [x] Marketplace data analysis (13M+ rows)
+- [x] Database access configuration (CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA + CLAIMS_DEMO)
+- [x] Identified key datasets for Cortex Agent configuration
+
+### Phase 2: Data Views for Agent Workflows 📊
+**Goal**: Structure data for the claim generation → rebuttal → optimization loop
+- [ ] **Patient Data Views**: Create tables/views for patient information lookup by Builder Agent
+- [ ] **Procedure Code Reference**: Setup `CPTDETAIL`/`DIAGNOSISDETAIL` for Builder Agent claim generation
+- [ ] **Claims History Views**: Structure `EOBDETAIL` for Insurance Agent rebuttal analysis
+- [ ] **Successful Claims Patterns**: Views on `CLAIMCHARGEDETAIL` for Builder Agent optimization
+- [ ] **Insurance Policy Tables**: Prepare policy data structure for both agents
+
+### Phase 3: Builder Agent Development 🛠️
+**Goal**: Create claim generator that gathers inputs and outputs insurance claims
+- [ ] **Builder Agent Setup**: Configure Cortex Agent to generate insurance claims from provider inputs
+- [ ] **Data Integration**: Connect to patient data, procedure codes, and insurance policies via Cortex Analyst
+- [ ] **Claim Generation Logic**: Prompt engineering for creating properly formatted insurance claims
+- [ ] **Feedback Processing**: Configure agent to receive rebuttal feedback and strengthen claims
+- [ ] **API Endpoint**: Expose Builder Agent functionality for frontend calls
+
+### Phase 4: Insurance Agent Development 🛡️
+**Goal**: Create adversarial validator that analyzes claims and outputs rebuttals with strength scores
+- [ ] **Insurance Agent Setup**: Configure Cortex Agent to analyze claims and generate rebuttals
+- [ ] **Denial Logic Integration**: Connect to `EOBDETAIL` denial patterns and policy data via Cortex Analyst
+- [ ] **Strength Scoring System**: Implement claim strength assessment based on denial likelihood
+- [ ] **Rebuttal Generation**: Prompt engineering for detailed feedback on claim weaknesses
+- [ ] **API Endpoint**: Expose Insurance Agent functionality for receiving claims and returning rebuttals
+
+### Phase 5: Policy Knowledge Base 📋
+**Goal**: Create searchable insurance policy data for both agents
+- [ ] **Policy Document Generation**: Use Cortex Complete to create realistic insurance policies
+- [ ] **AI Extract Pipeline**: Process PDFs → structured policy data in Snowflake tables
+- [ ] **Cortex Search Setup**: Configure vector search over policy documents for both agents
+- [ ] **Policy Integration**: Enable Builder Agent to gather policy info, Insurance Agent to enforce policies
+
+### Phase 6: Dual-Agent Orchestration Loop 🔄
+**Goal**: Implement the iterative claim optimization workflow
+- [ ] **Workflow Engine**: Build logic to orchestrate Provider Input → Builder → Insurance → Builder loop
+- [ ] **API Integration**: Sequential calls to Builder Agent (generate) → Insurance Agent (rebuttal) → Builder Agent (optimize)
+- [ ] **Convergence Logic**: Determine when claim is optimally strengthened (strength score threshold)
+- [ ] **Final Output**: Return optimized claim + strength score to provider for decision
+
+### Phase 7: Frontend Development 🎯
+**Goal**: Streamlit interface for the complete provider workflow
+- [ ] **Provider Input UI**: Interface for selecting patient, procedure, and inputting clinical notes
+- [ ] **Dual-Agent Visualization**: Real-time display of Builder → Insurance → Builder iterations
+- [ ] **Claims Display**: Show claim generation, rebuttals, and optimizations in progress
+- [ ] **Final Results**: Present optimized claim + strength score for provider decision
+- [ ] **Decision Interface**: Allow provider to accept optimized claim or explore alternatives
+
+### Phase 8: Demo Scenarios & Polish 📊
+**Goal**: Sales-ready demonstration scenarios
+- [ ] **Pre-built Patient Scenarios**: Create consistent demo cases (patient + procedure combinations)
+- [ ] **Marketplace Data Integration**: Show real healthcare data powering agent decisions
+- [ ] **Live Demo Flow**: Complete provider workflow from input to final claim decision
+- [ ] **Sales Talking Points**: Documentation highlighting Snowflake Cortex capabilities
 
 ## Hackathon Demo Features
 
@@ -424,4 +523,40 @@ This demo uniquely showcases **three core Snowflake differentiators** in one coh
 - **`CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA`**: Snowflake Marketplace source data (read-only)
 - **`CLAIMS_DEMO`**: Main project database for custom processing and demo results
 
-*This project transforms the insurance claims process from a reactive, manual workflow into a proactive, AI-driven optimization system leveraging Snowflake's complete data and AI platform - showcasing marketplace data access, native AI capabilities, and seamless application development in one compelling healthcare use case.*
+## 📊 **Current Data Landscape - Ready to Build**
+
+### **✅ Available Data Foundation**
+
+#### **Marketplace Data (Read-Only)**
+| **Source** | **Purpose** | **Agent Usage** |
+|------------|-------------|-----------------|
+| `EOBDETAIL` | Real insurance responses & denial patterns | Insurance Agent references actual payer behavior |
+| `CPTDETAIL` | Real procedure code usage patterns | Both agents validate codes against actual usage |
+| `DIAGNOSISDETAIL` | Real diagnosis code combinations | Both agents cross-reference diagnosis patterns |
+| `CLAIMCHARGEDETAIL` | Successful claim submission structures | Builder Agent learns optimal claim formatting |
+
+#### **Project Database (Fully Built)**
+| **Asset** | **Purpose** | **Agent Usage** |
+|-----------|-------------|-----------------|
+| **PATIENTS** | Patient demographics & Cigna insurance | Builder Agent gathers patient context |
+| **COMMON_PROCEDURES** | Frequent procedures with Cigna coverage | Builder Agent selects appropriate procedures |
+| **DENIAL_REASONS** | Cigna-specific denial templates | Insurance Agent generates authentic rebuttals |
+| **CIGNA_POLICY_RULES** | Official Cigna coverage policies | Both agents ensure policy compliance |
+| **Agent Views** | Optimized data access for agent queries | Real-time data lookup during agent operations |
+
+### **🚀 System Ready for Agent Configuration**
+- **Builder Agent Data**: Patient info + successful patterns + policy rules + procedure guides
+- **Insurance Agent Data**: Denial patterns + rebuttal templates + policy enforcement + strength metrics  
+- **Dual-Agent Workflow**: Complete data pipeline from provider input to final claim decision
+
+### **🎯 Data Architecture Complete - Ready for Agents**
+1. ✅ **Patient Data**: 5 Cigna members with diverse medical conditions ready for demos
+2. ✅ **Procedure Intelligence**: 8 common procedures with Cigna-specific coverage details
+3. ✅ **Denial Logic**: 6 realistic denial reasons with authentic Cigna policy templates
+4. ✅ **Policy Framework**: Complete Cigna coverage rules for both agent validation
+5. ✅ **Success Patterns**: Real marketplace data powering agent optimization logic
+6. ✅ **Strength Metrics**: 8.6% baseline approval rate from actual claims data
+
+---
+
+*This project transforms the insurance claims process from a reactive, manual workflow into a proactive, AI-driven optimization system leveraging Snowflake's complete data and AI platform - powered by 13+ million rows of real healthcare data for authentic dual-agent behavior.*
