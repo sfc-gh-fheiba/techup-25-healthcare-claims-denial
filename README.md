@@ -43,36 +43,76 @@ graph TD
 3. **Complex Policy Matching**: Difficulty matching claim details against complex insurance policy documents
 4. **Revenue Loss**: Denied claims represent lost revenue that requires time-intensive recovery processes
 
-## Our Solution: Intelligent Claims Optimization
+## Our Solution: AI-Powered Dual-Agent Claims Optimization
+
+### 💡 **Revolutionary Approach: Adversarial AI Architecture**
+
+Unlike traditional claims systems that only validate after submission, our solution uses **two competing AI agents** to iteratively optimize claims **before** submission:
+
+- **🛠️ Builder Agent**: Optimizes claims for maximum approval probability
+- **🛡️ Insurance Agent**: Challenges claims using realistic insurance company logic  
+- **🔄 Optimization Loop**: Agents iterate until optimal balance of accuracy and approval likelihood
+- **📊 Confidence Scoring**: Quantifies claim strength for informed decision-making
+
+This **game-theory inspired approach** mirrors real-world insurance dynamics while leveraging Snowflake's complete AI platform.
 
 ### What Our Project Does in the Flow
 
-Our system intercepts and enhances the claims process at multiple points:
+Our system **revolutionizes the claims-generation process** with an AI-driven approach that saves providers time and dramatically increases claim approval probability through iterative optimization:
 
-1. **Pre-Submission Validation**: Analyze claims before submission to predict approval likelihood
-2. **Denial Analysis**: Automatically process denial notices to identify root causes
-3. **Policy Matching**: Use AI to match claim details against insurance policy documents
-4. **Automated Appeals**: Generate appeals with supporting documentation and policy references
+#### **🤖 Dual AI Agent Architecture**
 
-### Enhanced Flow with Our System
+**1. Provider Input & Initial Setup**
+- Provider selects patient, procedure, and inputs clinical notes
+- System gathers patient data from `CLAIMS_DEMO` database
+- Retrieves relevant insurance policy information
+
+**2. Builder Agent (Claims Optimization)**
+- Gathers doctor inputs, patient data, and insurance policy information 
+- Uses **Snowflake Cortex Complete** to generate optimized insurance claim
+- Leverages marketplace data patterns from `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA`
+
+**3. Insurance Agent (Claims Validation)**  
+- Acts as adversarial validator using **Cortex Complete**
+- Analyzes claim against insurance policy and claims history
+- Outputs detailed "rebuttal" with specific weaknesses and strength score
+- **Goal**: Deny claims while staying within policy framework (realistic insurance behavior)
+
+**4. Iterative Optimization Loop**
+- Builder receives rebuttal feedback and strengthens claim
+- Uses **Cortex Search** to find supporting policy language and precedents
+- Cycle repeats until optimal claim strength achieved
+
+**5. Final Decision Support**
+- Outputs final claim with associated strength score to doctor
+- Doctor reviews AI-optimized claim and decides whether to proceed
+- System provides confidence metrics and risk assessment
+
+### Enhanced Flow with Our Dual-Agent System
 
 ```mermaid
 graph TD
-    A[Patient/Provider] --> B[Medical Procedure/Service]
-    B --> C[Create Claim]
-    C --> D[Our AI System - Pre-Validation]
-    D --> E{Pre-Check Result}
-    E -->|High Risk| F[Suggest Corrections]
-    E -->|Low Risk| G[Submit to Insurance]
-    F --> D
-    G --> H[Insurance Review]
-    H --> I{Claim Decision}
-    I -->|Approved| J[Payment Issued]
-    I -->|Denied| K[Our AI System - Denial Analysis]
-    K --> L[Policy Document Search]
-    L --> M[Generate Automated Appeal]
-    M --> N[Submit Appeal with Evidence]
-    N --> H
+    A[Provider Input] --> B[Patient + Procedure + Clinical Notes]
+    B --> C[Builder Agent: Cortex Complete]
+    C --> D[Generate Initial Claim]
+    D --> E[Insurance Agent: Cortex Complete]
+    E --> F[Analyze vs Policy + History]
+    F --> G[Generate Rebuttal + Score]
+    G --> H{Strength Score Acceptable?}
+    H -->|No - Strengthen| I[Builder Agent: Improve Claim]
+    I --> J[Cortex Search: Policy Support]
+    J --> E
+    H -->|Yes - Optimized| K[Final Claim + Score]
+    K --> L[Doctor Decision]
+    L --> M{Proceed with Claim?}
+    M -->|Yes| N[Submit Optimized Claim]
+    M -->|No| O[Alternative Procedure]
+    N --> P[Higher Success Probability]
+    
+    style C fill:#e1f5fe
+    style E fill:#fff3e0
+    style I fill:#e8f5e8
+    style J fill:#f3e5f5
 ```
 
 ## Technical Architecture
@@ -83,26 +123,28 @@ This solution is built entirely within the Snowflake ecosystem, leveraging the f
 
 ### Core Components
 
-#### 1. **Claims Data Processing**
-- **Input**: Structured claim data (XML/JSON format)
-- **Content**: Procedure codes, costs, patient information, provider details
-- **Processing**: Validation, normalization, code verification
+#### 1. **Provider Interface & Data Ingestion**
+- **Input Collection**: Patient selection, procedure codes, clinical notes
+- **Data Integration**: Patient history from `CLAIMS_DEMO`, insurance policies, marketplace patterns
+- **Processing**: Validation, normalization, code verification against `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA`
 
-#### 2. **Policy Document Analysis**
-- **Snowflake AI Extract**: Process unstructured insurance policy documents using Snowflake's native AI capabilities
-- **Cortex Search**: Fuzzy matching of procedures against policy rules with vector-based semantic search
-- **Cortex Complete**: LLM-powered analysis and rule extraction from policy documents
-- **Rule Database**: Structured lookup table for procedure codes and approval criteria stored in Snowflake
+#### 2. **Builder Agent (Claims Optimization)**
+- **Cortex Complete Integration**: LLM-powered claim generation and optimization
+- **Marketplace Intelligence**: Leverages real claims patterns from marketplace data
+- **Policy Analysis**: Uses Cortex Search for relevant policy language and precedents
+- **Iterative Improvement**: Incorporates feedback to strengthen claims through multiple iterations
 
-#### 3. **AI-Powered Matching Engine**
-- **Code Validation**: Verify correct procedure codes against insurance databases
-- **Fuzzy Matching**: Find similar procedures when exact codes don't match
-- **Policy Compliance Check**: Match claim details against policy requirements
+#### 3. **Insurance Agent (Adversarial Validation)**
+- **Cortex Complete Analysis**: Acts as realistic insurance reviewer
+- **Policy Enforcement**: Strict adherence to insurance company guidelines and precedent
+- **Rebuttal Generation**: Provides detailed feedback on claim weaknesses
+- **Scoring System**: Quantitative strength assessment for claims
 
-#### 4. **Automated Response Generation**
-- **Appeal Generation**: Create structured appeals with policy references
-- **Supporting Documentation**: Compile relevant policy excerpts and justifications
-- **Multi-format Output**: Email templates, PDF reports, structured data exports
+#### 4. **Optimization Loop Engine**
+- **Feedback Integration**: Builder agent processes insurance agent rebuttals
+- **Cortex Search**: Finds supporting evidence and policy justifications
+- **Iterative Refinement**: Continuous improvement until optimal strength achieved
+- **Decision Support**: Final claims with confidence metrics and risk assessment
 
 ### Technology Stack
 
@@ -122,11 +164,11 @@ This solution is built entirely within the Snowflake ecosystem, leveraging the f
 
 This demo highlights key Snowflake Cortex capabilities that sales engineers can showcase:
 
-#### **Cortex Complete (LLM)**
-- **Intelligent Appeal Generation**: Generate personalized appeal letters using context from policy documents
-- **Claims Analysis**: Natural language analysis of claim details and denial reasons
-- **Policy Interpretation**: Convert complex insurance language into actionable insights
-- **Multi-model Support**: Leverage different LLM models optimized for specific tasks
+#### **Cortex Complete (LLM) - Dual Agent System**
+- **Builder Agent**: Generate and iteratively optimize insurance claims using policy context
+- **Insurance Agent**: Adversarial validation and rebuttal generation simulating real insurance behavior
+- **Policy Interpretation**: Convert complex insurance language into actionable insights for both agents
+- **Multi-model Support**: Leverage different LLM models optimized for claim building vs. claim validation tasks
 
 #### **Cortex Search (Vector Search)**
 - **Semantic Policy Matching**: Find relevant policy sections using natural language queries
@@ -272,29 +314,34 @@ This project is specifically designed for **Snowflake sales engineers** to showc
 - **Compliance Ready**: Healthcare data remains secure within Snowflake
 
 ### Live Demo Capabilities
-1. **Marketplace Data Exploration**: Query real healthcare claims from `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA`
-2. **Upload Claim Document**: Real-time AI Extract processing in `CLAIMS_DEMO` database
-3. **Policy Matching**: Vector search finds relevant policy sections instantly  
-4. **Appeal Generation**: Watch Cortex Complete create personalized appeals
-5. **Success Analytics**: Show Cortex Analyst insights combining marketplace and custom data
+1. **Provider Input Simulation**: Select patient, procedure, and input clinical notes
+2. **Builder Agent in Action**: Watch Cortex Complete generate initial optimized claim
+3. **Insurance Agent Challenge**: See adversarial validation and rebuttal generation
+4. **Iterative Optimization**: Observe the Builder-Insurance agent feedback loop
+5. **Marketplace Intelligence**: Real-time queries against `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA` for precedent analysis
+6. **Policy Vector Search**: Cortex Search finds supporting policy language instantly
+7. **Final Decision Support**: Present claim strength score and confidence metrics to provider
 
 ## Demo Scenario
 
 ### Final Demo Flow
-1. **Marketplace Data Exploration**: Show real healthcare claims from `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA`
-2. **Upload Claim**: User submits insurance claim through web interface (stored in `CLAIMS_DEMO`)
-3. **Cross-Database Analysis**: Combine marketplace patterns with uploaded claim data
-4. **AI Analysis**: System analyzes claim against policy documents using Cortex services
-5. **Risk Assessment**: Display approval probability based on marketplace trends
-6. **Recommendations**: Show suggested corrections using historical marketplace data
-7. **Appeal Generation**: Generate automated appeal with marketplace-backed evidence
-8. **Results Display**: Highlight relevant policy sections and marketplace validation
+1. **Provider Setup**: Doctor selects patient, procedure (e.g., MRI), and inputs clinical notes
+2. **Builder Agent Initialization**: Cortex Complete gathers data and generates initial claim
+3. **Insurance Agent Analysis**: Adversarial agent analyzes claim, provides detailed rebuttal and strength score
+4. **Optimization Loop Demo**: Watch Builder agent improve claim based on feedback (2-3 iterations)
+5. **Marketplace Validation**: Show how system uses `CLAIMS_HOSPITAL_CLAIMS__REMITS_DATA` for precedent support
+6. **Policy Search**: Demonstrate Cortex Search finding supporting policy language
+7. **Final Recommendation**: Present optimized claim with strength score to doctor
+8. **Decision Point**: Doctor chooses to proceed with optimized claim or consider alternatives
+9. **Success Metrics**: Display improved approval probability vs. original claim
 
-### Success Metrics
-- Reduction in claim denial rates
-- Decreased time to appeal resolution
-- Increased revenue recovery
-- Improved finance team efficiency
+### Success Metrics for Dual-Agent System
+- **Pre-submission optimization**: Higher approval rates through proactive claim strengthening
+- **Reduced denial rates**: AI agents identify and fix issues before submission
+- **Faster decision-making**: Confidence scores help providers make informed choices
+- **Revenue optimization**: Focus resources on high-probability claims
+- **Provider efficiency**: Automated optimization reduces manual claim review time
+- **Learning system**: Marketplace data improves agent performance over time
 
 ## Business Applications
 
