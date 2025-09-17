@@ -468,7 +468,7 @@ This project is specifically designed for **Snowflake sales engineers** to showc
 
 ### Installation
 
-**📋 Quick Setup (10 minutes):**
+**📋 Quick Setup (15 minutes):**
 
 ```bash
 # Clone the repository
@@ -480,16 +480,24 @@ open SETUP.md  # Follow RSA key setup guide
 
 # 2. Run setup notebooks in Snowflake (in order):
 # - 01_Data_Views_for_Agent_Workflows.ipynb
-# - 02_Builder_Agent_Development.ipynb
+# - 02_Builder_Agent_Development.ipynb  
+# - 03_Builder_Agent_Configuration.ipynb
+# - 04_Insurance_Agent_Development.ipynb
+# - 05_Policy_Knowledge_Base.ipynb
+# - 06_Dual_Agent_Orchestration_Loop.ipynb
+# - 07_Frontend_Development_Streamlit.ipynb
+
+# 3. Deploy Streamlit app (see DEPLOYMENT.md)
 ```
 
 **⚡ Key Setup Steps:**
 1. Generate RSA key pair for secure authentication ([SETUP.md](./SETUP.md))
 2. Add public key to your Snowflake user account  
 3. Copy `config.toml.template` to `config.toml` and customize
-4. **Run setup notebooks in Snowflake** to build data foundation and agents
+4. **Run all 7 setup notebooks in Snowflake** to build complete system
+5. **Deploy Streamlit app** for live demos ([DEPLOYMENT.md](./DEPLOYMENT.md))
 
-**📖 Complete instructions: [SETUP.md](./SETUP.md) + Setup Notebooks**
+**📖 Complete instructions: [SETUP.md](./SETUP.md) + [DEPLOYMENT.md](./DEPLOYMENT.md)**
 
 ### Configuration
 - **Snowflake connection parameters** (account, user, password, warehouse)
