@@ -1,0 +1,20 @@
+# Snowflake CLI Configuration Template for Healthcare Claims Demo
+# Copy this file to config.toml and update with your credentials
+# This template is specifically for the TechUp 2025 Healthcare Claims Optimization demo
+
+[connections.healthcare_claims_demo]
+account = "sfsenorthamerica-demo158"
+user = "YOUR_USERNAME_HERE"
+private_key_path = "/Users/YOUR_USERNAME/.ssh/snowflake_rsa_key.p8"
+authenticator = "SNOWFLAKE_JWT"
+role = "ACCOUNTADMIN"
+warehouse = "DEMO_WH"
+database = "CLAIMS_DEMO"
+schema = "PUBLIC"
+
+# Configuration notes:
+# - Replace YOUR_USERNAME_HERE with your Snowflake username
+# - Replace /Users/YOUR_USERNAME with your actual home directory path
+# - Ensure your RSA private key is located at the specified path
+# - Make sure your user has access to the CLAIMS_DEMO database and DEMO_WH warehouse
+# - Your user needs RSA public key authentication configured in Snowflake

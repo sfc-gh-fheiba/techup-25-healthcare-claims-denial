@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Snowflake Configuration
+# Ignore the actual config file with credentials, keep template
+config.toml
+*.p8
+*.pem
