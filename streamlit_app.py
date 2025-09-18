@@ -66,96 +66,46 @@ def load_procedures():
     result = session.sql(query).collect()
     return [(row['PROCEDURE_CODE'], row['PROCEDURE_NAME'], row['CIGNA_COVERAGE_NOTES']) for row in result]
 
-# Enhanced System Dashboard (moved to top)
-st.header("📊 Live System Dashboard")
+# System Statistics
+st.header("📊 System Statistics")
 
-# Create dashboard metrics and visualizations
-if st.session_state.workflow_step >= 1:
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("Workflow Step", st.session_state.workflow_step, "of 8")
-    
-    with col2:
-        claim_status = "✅ Generated" if st.session_state.generated_claim else "❌ Pending"
-        st.metric("Claim Status", claim_status)
-    
-    with col3:
-        insurance_status = "✅ Analyzed" if st.session_state.insurance_rebuttal else "❌ Pending" 
-        st.metric("Insurance Review", insurance_status)
-    
-    with col4:
-        appeals_status = f"Round {st.session_state.appeals_round}/3"
-        st.metric("Appeals", appeals_status)
+# System Statistics with charts
+stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
 
-# Enhanced visualizations with Plotly
-if st.session_state.workflow_step >= 3:
-    chart_col1, chart_col2 = st.columns(2)
-    
-    with chart_col1:
-        # Workflow Progress Chart
-        workflow_steps = ['Patient', 'Procedure', 'Notes', 'Claim Gen', 'Insurance', 'Judge', 'Appeals', 'Final']
-        progress = [1 if i < st.session_state.workflow_step else 0 for i in range(len(workflow_steps))]
-        
-        fig_progress = px.bar(
-            x=workflow_steps, 
-            y=progress,
-            title="🚀 Workflow Progress",
-            color=progress,
-            color_continuous_scale=['lightgray', 'green']
-        )
-        fig_progress.update_layout(showlegend=False, height=300)
-        st.plotly_chart(fig_progress, use_container_width=True)
-    
-    with chart_col2:
-        # Claim Strength Analysis
-        if st.session_state.insurance_rebuttal:
-            try:
-                rebuttal_json = json.loads(st.session_state.insurance_rebuttal)
-                strength_score = rebuttal_json.get('strength_score', 0)
-                
-                # Create gauge chart for claim strength
-                fig_gauge = go.Figure(go.Indicator(
-                    mode = "gauge+number+delta",
-                    value = strength_score,
-                    domain = {'x': [0, 1], 'y': [0, 1]},
-                    title = {'text': "🎯 Claim Strength Score"},
-                    delta = {'reference': 0.5},
-                    gauge = {
-                        'axis': {'range': [None, 1]},
-                        'bar': {'color': "darkblue"},
-                        'steps': [
-                            {'range': [0, 0.4], 'color': "lightgray"},
-                            {'range': [0.4, 0.7], 'color': "yellow"},
-                            {'range': [0.7, 1], 'color': "green"}
-                        ],
-                        'threshold': {
-                            'line': {'color': "red", 'width': 4},
-                            'thickness': 0.75,
-                            'value': 0.7
-                        }
-                    }
-                ))
-                fig_gauge.update_layout(height=300)
-                st.plotly_chart(fig_gauge, use_container_width=True)
-            except:
-                st.info("Claim strength will appear after orchestration")
-        else:
-            st.info("📊 Claim analysis will appear after orchestration")
+with stat_col1:
+    st.metric("👥 Patients", "5", help="Cigna members available")
+with stat_col2:
+    st.metric("🏥 Procedures", "8", help="Common procedures loaded")
+with stat_col3:
+    st.metric("📋 Policies", "3", help="Cigna policy documents")
+with stat_col4:
+    st.metric("🤖 AI Agents", "3", help="Builder + Insurance + Judge")
 
-# System Stats Overview
-if st.session_state.workflow_step >= 1:
-    with st.expander("📈 System Statistics"):
-        stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
-        
-        with stat_col1:
-            st.metric("👥 Patients", "5", help="Cigna members available")
-        with stat_col2:
-            st.metric("🏥 Procedures", "8", help="Common procedures loaded")
-        with stat_col3:
-            st.metric("📋 Policies", "3", help="Cigna policy documents")
-        with stat_col4:
-            st.metric("🤖 AI Agents", "3", help="Builder + Insurance + Judge")
+# Workflow progress and claim strength charts removed from System Statistics section
+
+# System Statistics Charts (always visible)
+import pandas as pd
+
+# Create system stats charts
+stats_col1, stats_col2 = st.columns(2)
+
+with stats_col1:
+    # Patient distribution chart
+    patient_data = pd.DataFrame({
+        'Insurance_Type': ['Cigna Premium', 'Cigna Basic', 'Cigna Plus'],
+        'Count': [2, 2, 1]
+    })
+    fig_patients = px.pie(patient_data, values='Count', names='Insurance_Type', title="Patient Insurance Distribution")
+    st.plotly_chart(fig_patients, use_container_width=True)
+
+with stats_col2:
+    # Procedure categories chart
+    proc_data = pd.DataFrame({
+        'Category': ['Laboratory', 'Cardiology', 'Emergency', 'Diagnostic'],
+        'Count': [3, 2, 2, 1]
+    })
+    fig_procedures = px.bar(proc_data, x='Category', y='Count', title="Procedures by Category")
+    st.plotly_chart(fig_procedures, use_container_width=True)
 
 st.markdown("---")
 
@@ -224,8 +174,32 @@ if selected_patient and selected_procedure:
             # Run the complete orchestration loop
             with st.spinner("🤖 Running Dual-Agent Orchestration Loop..."):
                 try:
+                    # Show Live Process Dashboard first
+                    st.markdown("---")
+                    st.subheader("🔄 Live Process Dashboard")
+                    
+                    dashboard_cols = st.columns(4)
+                    with dashboard_cols[0]:
+                        workflow_metric = st.empty()
+                    with dashboard_cols[1]:
+                        claim_metric = st.empty()
+                    with dashboard_cols[2]:
+                        insurance_metric = st.empty()
+                    with dashboard_cols[3]:
+                        appeals_metric = st.empty()
+                    
+                    # Initialize dashboard
+                    workflow_metric.metric("Workflow Step", "4", "of 8")
+                    claim_metric.metric("Claim Status", "❌ Pending")
+                    insurance_metric.metric("Insurance Review", "❌ Pending")
+                    appeals_metric.metric("Appeals", "Round 0/3")
+                    
+                    st.markdown("---")
+                    progress_container = st.container()
                     # Step 1: Builder Agent - Generate Claim
-                    st.info("Step 1: 🤖 Builder Agent generating claim...")
+                    with progress_container:
+                        st.info("Step 1: 🤖 Builder Agent generating claim...")
+                    
                     builder_query = f"""
                     SELECT CLAIMS_DEMO.PUBLIC.BUILDER_AGENT(
                         '{patient_id}',
@@ -237,10 +211,16 @@ if selected_patient and selected_procedure:
                     builder_result = session.sql(builder_query).collect()
                     generated_claim = builder_result[0]['GENERATED_CLAIM']
                     st.session_state.generated_claim = generated_claim
-                    st.session_state.workflow_step = 4
+                    st.session_state.workflow_step = 5
+                    
+                    # Update dashboard
+                    workflow_metric.metric("Workflow Step", "5", "of 8")
+                    claim_metric.metric("Claim Status", "✅ Generated")
                     
                     # Step 2: Insurance Agent - Analyze Claim
-                    st.info("Step 2: 🛡️ Insurance Agent analyzing claim...")
+                    with progress_container:
+                        st.info("Step 2: 🛡️ Insurance Agent analyzing claim...")
+                    
                     insurance_query = f"""
                     SELECT CLAIMS_DEMO.PUBLIC.INSURANCE_AGENT_WITH_POLICY(
                         '{generated_claim.replace("'", "''")}',
@@ -251,10 +231,16 @@ if selected_patient and selected_procedure:
                     insurance_result = session.sql(insurance_query).collect()
                     insurance_rebuttal = insurance_result[0]['INSURANCE_REBUTTAL']
                     st.session_state.insurance_rebuttal = insurance_rebuttal
-                    st.session_state.workflow_step = 5
+                    st.session_state.workflow_step = 6
+                    
+                    # Update dashboard
+                    workflow_metric.metric("Workflow Step", "6", "of 8")
+                    insurance_metric.metric("Insurance Review", "✅ Analyzed")
                     
                     # Step 3: AI Judge - Make Decision
-                    st.info("Step 3: ⚖️ AI Judge making decision...")
+                    with progress_container:
+                        st.info("Step 3: ⚖️ AI Judge making decision...")
+                    
                     judge_query = f"""
                     SELECT CLAIMS_DEMO.PUBLIC.AI_JUDGE_DECISION(
                         '{generated_claim.replace("'", "''")}',
@@ -267,7 +253,10 @@ if selected_patient and selected_procedure:
                     judge_result = session.sql(judge_query).collect()
                     judge_decision = judge_result[0]['JUDGE_DECISION']
                     st.session_state.judge_decision = judge_decision
-                    st.session_state.workflow_step = 6
+                    st.session_state.workflow_step = 7
+                    
+                    # Update dashboard
+                    workflow_metric.metric("Workflow Step", "7", "of 8")
                     
                     # Parse judge decision to check if denied
                     try:
@@ -277,14 +266,17 @@ if selected_patient and selected_procedure:
                         
                         # Step 4: Appeals Process (if denied)
                         if final_decision == 'DENIED':
-                            st.info("Claim denied - Starting appeals process...")
+                            with progress_container:
+                                st.info("Claim denied - Starting appeals process...")
                             st.session_state.appeals_round = 0
                             st.session_state.appeal_history = []
-                            
+                        
                             # Run appeals loop (max 3 rounds)
                             for round_num in range(1, 4):  # 3 rounds max
                                 # Doctor Appeal
-                                st.info(f"Step 4.{round_num}a: 📋 Doctor filing appeal round {round_num}...")
+                                with progress_container:
+                                    st.info(f"Step 4.{round_num}a: 📋 Doctor filing appeal round {round_num}...")
+                                
                                 appeal_query = f"""
                                 SELECT CLAIMS_DEMO.PUBLIC.DOCTOR_APPEAL_GENERATOR(
                                     '{generated_claim.replace("'", "''")}',
@@ -304,8 +296,13 @@ if selected_patient and selected_procedure:
                                     'content': doctor_appeal
                                 })
                                 
+                                # Update dashboard
+                                appeals_metric.metric("Appeals", f"Round {round_num}/3")
+                                
                                 # Insurance Counter-Appeal
-                                st.info(f"Step 4.{round_num}b: 🛡️ Insurance counter-appeal round {round_num}...")
+                                with progress_container:
+                                    st.info(f"Step 4.{round_num}b: 🛡️ Insurance counter-appeal round {round_num}...")
+                                
                                 counter_query = f"""
                                 SELECT CLAIMS_DEMO.PUBLIC.INSURANCE_COUNTER_APPEAL(
                                     '{doctor_appeal.replace("'", "''")}',
@@ -323,8 +320,13 @@ if selected_patient and selected_procedure:
                                     'content': insurance_counter
                                 })
                         
+                        # Update final dashboard
+                        workflow_metric.metric("Workflow Step", "8", "of 8")
+                        
+                        with progress_container:
+                            st.success("✅ Dual-Agent Orchestration Complete!")
+                        
                         st.session_state.workflow_step = 8
-                        st.success("✅ Dual-Agent Orchestration Complete!")
                         st.experimental_rerun()
                         
                     except json.JSONDecodeError:
